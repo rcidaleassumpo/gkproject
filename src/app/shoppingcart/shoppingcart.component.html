@@ -1,5 +1,2 @@
-<div *ngFor="let transactions of allTransactionsLineItems">
-  <div *ngFor="let item of transactions | keyvalue">
-    {{item.actionCode}}
-  </div>
+<div *ngFor="let transactions of allTransactionsLineItems| keyvalue">
 </div>
