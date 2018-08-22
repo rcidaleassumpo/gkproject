@@ -1,16 +1,21 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { HttpClientModule } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
+import { ShoppingcartComponent } from './shoppingcart/shoppingcart.component';
+import { ApiDataService } from './service/api-data.service';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    ShoppingcartComponent
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    HttpClientModule
   ],
-  providers: [],
+  providers: [ApiDataService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
