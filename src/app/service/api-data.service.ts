@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http'
 import { map, filter } from 'rxjs/operators'
 import { Observable } from 'rxjs';
 import { Transaction } from '../transaction';
-import { TransactionNoPromotion } from '../transactionNoPromotion';
+import { TaxLineItem } from '../taxlineitem';
 
 const url = ['assets/tx-2018.03.26 16-28-49-54z7bf935c0506f47079e3ad68895565.json',
 'assets/tx-2018.03.26 16-27-23-54z850d9fef49ae4f108e6777987e6c9.json',
@@ -18,49 +18,53 @@ export class ApiDataService {
   private allTransactions;
 
   constructor(private http: HttpClient) {
-    this.getRetailTransactionLineItemList()
+    this.setSaleReturnLineItemList()
   }
 
-  private getRetailTransactionLineItemList(){
+  
+  private setSaleReturnLineItemList(){
     this.allTransactions = url.map(item => this.http.get(item)).map((obs) => obs.pipe(map((data) => {
       return data["com.gk_software.gkr.api.txpool.dto.Transaction"]
     .retailTransactionList[0]["com.gk_software.gkr.api.txpool.dto.RetailTransaction"]
     .retailTransactionLineItemList
-  })))
-    return this.allTransactions
-  }
-  
-  getSaleReturnLineItemList(){
-    return this.allTransactions.map((obs)=>{
-      return obs.pipe(map((item:Array<any>)=>{
+  }))).map((obs)=>{
+      return obs.pipe(map((item)=>{
+         
         return item.map((item)=>{
-          if(item['com.gk_software.gkr.api.txpool.dto.RetailTransactionLineItem'].retailTransactionLineItemTypeCode == 'SR'){
-            return item['com.gk_software.gkr.api.txpool.dto.RetailTransactionLineItem'].saleReturnLineItemList['0']['com.gk_software.gkr.api.txpool.dto.SaleReturnLineItem']
+          let retailTransactionLineItem = item['com.gk_software.gkr.api.txpool.dto.RetailTransactionLineItem']
+          if( retailTransactionLineItem.retailTransactionLineItemTypeCode == 'SR'){
+            return retailTransactionLineItem.saleReturnLineItemList['0']['com.gk_software.gkr.api.txpool.dto.SaleReturnLineItem']
+          } else if( retailTransactionLineItem.retailTransactionLineItemTypeCode == 'TX'){
+            return retailTransactionLineItem.taxLineItemList['0']['com.gk_software.gkr.api.txpool.dto.TaxLineItem']
           }
         }).filter((item) => item != undefined)
           .map((lineItemSR) => {
-          let aNoPromotion: Transaction = {
-            actionCode: lineItemSR['actionCode'],
-            receiptText: lineItemSR['receiptText'],
-            regularUnitPrice: lineItemSR['regularUnitPrice'],
-            extendedDiscountAmount: lineItemSR['extendedDiscountAmount']
-          };
-          let aPromotion: TransactionNoPromotion = {
-            actionCode: lineItemSR['actionCode'],
-            receiptText: lineItemSR['receiptText'],
+          let a: Transaction = {
+            quantity: lineItemSR['quantity'],
+            receiptDescription: lineItemSR['receiptDescription'],
             regularUnitPrice: lineItemSR['regularUnitPrice'],
             extendedDiscountAmount: lineItemSR['extendedDiscountAmount'],
             grandExtendedAmount: lineItemSR['grandExtendedAmount'],
           };
-          if (lineItemSR['extendedDiscountAmount'] == 0) {
-            return aNoPromotion;
+          let b: TaxLineItem = {
+            taxableAmount: lineItemSR['taxableAmount'],
+            taxAmount: lineItemSR['taxAmount'],
+            taxPercent: lineItemSR['taxPercent']
+          };
+
+          if(a.receiptDescription === undefined){
+            return b
+          } else {
+            return a
           }
-          else {
-            return aPromotion;
-          }
+            
         });
       }))
     })
+  }
+
+  getAllTransactions(){
+    return this.allTransactions
   }
 
 }

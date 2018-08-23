@@ -1,0 +1,16 @@
+<div class="ui container" *ngFor="let lineItem of lineItemObj">
+  <div class="ui items">
+    <div class="item">
+      <div class="ui container">Merchandise Subtotal</div>
+      <div class="ui right floated">{{lineItem.taxableAmount - lineItem.taxAmount | currency }}</div>
+    </div>
+    <div class="item">
+      <div class="ui container">Sales Tax</div>
+      <div class="ui right floated">({{lineItem.taxAmount}})</div>
+    </div>
+    <div class="item">
+        <div class="ui container">Total Amount</div>
+        <div class="ui right floated">{{lineItem.taxableAmount | currency }}</div>
+    </div>
+  </div>
+</div>

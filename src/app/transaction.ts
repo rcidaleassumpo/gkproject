@@ -1,6 +1,7 @@
 export class Transaction {
-    actionCode: string;
-    receiptText: string;
+    receiptDescription: string;
     regularUnitPrice: number;
     extendedDiscountAmount: number;
+    grandExtendedAmount: number;
+    quantity: number;
 }

@@ -1,2 +1,12 @@
-<div *ngFor="let transactions of allTransactionsLineItems| keyvalue">
+<div class="ui container">
+  <button *ngFor="let test of allTransactionsLineItems; index as i" class="ui secondary basic button" (click)="isActiveTransaction(i)">Transaction {{i}}</button>
+  <div class="ui divider"></div>
+  <div class="ui grid">
+    <div class="column twelve wide">
+      <app-transactions [activeTransaction]="allTransactionsLineItems[active]"></app-transactions>
+    </div>
+    <div class="column four wide">
+      <app-order-summary [activeTransaction]="taxLineItens[active]"></app-order-summary>
+    </div>
+  </div>
 </div>
